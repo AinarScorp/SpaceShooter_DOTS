@@ -3,15 +3,15 @@ using Unity.Mathematics;
 
 namespace SpaceShooter.Components
 {
-    public struct AsteroidMoveSpeed : IComponentData
+    public struct MoveSpeed : IComponentData, IEnableableComponent
     {
         public float Value;
     }
 
-    public struct AsteroidMoveDirection : IComponentData
+    public struct MoveDirection : IComponentData
     {
         public float3 Value;
     }
 
-    public struct AsteroidTag : IComponentData{}
+
 }

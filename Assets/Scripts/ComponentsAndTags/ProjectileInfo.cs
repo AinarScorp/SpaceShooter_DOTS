@@ -6,6 +6,6 @@ namespace SpaceShooter.Components
     {
         
     }
-    public struct FireProjectileTag : IComponentData, IEnableableComponent {}
+    public struct ProjectileTag : IComponentData{}
 
 }

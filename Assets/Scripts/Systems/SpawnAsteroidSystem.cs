@@ -1,7 +1,9 @@
 ﻿using Aspects;
+using Helpers;
 using SpaceShooter.Components;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace SpaceShooter.Systems
@@ -26,9 +28,12 @@ namespace SpaceShooter.Systems
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
             BeginInitializationEntityCommandBufferSystem.Singleton ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
+            Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
+            float3 playerLocation = SystemAPI.GetComponent<LocalTransform>(playerEntity).Position;
 
             new SpawnAsteroidJob
             {
+                PlayerLocation = playerLocation,
                 DeltaTime = deltaTime,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged)
             }.Run();
@@ -39,22 +44,25 @@ namespace SpaceShooter.Systems
     {
         public float DeltaTime;
         public EntityCommandBuffer ECB;
+        public float3 PlayerLocation;
         
         [BurstCompile]
-        void Execute(AsteroidAspect asteroid)
+        void Execute(AsteroidSpawnerAspect asteroidSpawner)
         {
-            asteroid.AsteroidSpawnTimer -= DeltaTime;
-            if(!asteroid.AsteroidIsReadyForSpawn) return;
+            asteroidSpawner.AsteroidSpawnTimer -= DeltaTime;
+            if(!asteroidSpawner.AsteroidIsReadyForSpawn) return;
             //if(!asteroid.ZombieSpawnPointInitialized()) return;
             
-            asteroid.AsteroidSpawnTimer = asteroid.AsteroidSpawnRate;
-            Entity newZombie = ECB.Instantiate(asteroid.AsteroidPrefab);
+            asteroidSpawner.AsteroidSpawnTimer = asteroidSpawner.AsteroidSpawnRate;
+            Entity newAsteroid = ECB.Instantiate(asteroidSpawner.AsteroidPrefab);
             
-            LocalTransform newZombieTransform = asteroid.GetRandomSpawnLocation();
-            ECB.SetComponent(newZombie, newZombieTransform);
-            //
-            // float zombieHeading = MathHelpers.GetHeading(newZombieTransform.Position, asteroid.Position);
-            // ECB.SetComponent(newZombie, new ZombieHeading{Value = zombieHeading});
+            LocalTransform newAsteroidPosition = asteroidSpawner.GetRandomSpawnLocation();
+            ECB.SetComponent(newAsteroid, newAsteroidPosition);
+
+            ECB.SetComponent(newAsteroid, new MoveDirection{Value = MathHelpers.GetDirection(newAsteroidPosition.Position, PlayerLocation)});
+            ECB.SetComponentEnabled<MoveSpeed>(newAsteroid, true);
+
+
         }
     }
 }

@@ -5,10 +5,8 @@ using Unity.Transforms;
 
 namespace Aspects
 {
-    public readonly partial struct AsteroidAspect : IAspect
+    public readonly partial struct AsteroidSpawnerAspect : IAspect
     {
-        public readonly Entity Entity;
-
         readonly RefRW<LocalTransform> transform;
 
         readonly RefRW<AsteroidSpawnTimer> asteroidSpawnTimer;
@@ -25,10 +23,10 @@ namespace Aspects
             {
                 Position = GetRandomPosition(),
                 Rotation = quaternion.identity,
-                Scale = 1
+                Scale = GetRandomScale(0.3f,1.2f)
             };
         }
-
+        
         private float3 GetRandomPosition()
         {
             bool spawnVertically = gameRandom.ValueRW.Value.NextBool();
@@ -49,7 +47,7 @@ namespace Aspects
 
             return randomPosition;
         }
-
+        float GetRandomScale(float minScale, float maxScale) => gameRandom.ValueRW.Value.NextFloat(minScale, maxScale);
         private float3 MinCorner => position - MapDimensions;
         private float3 MaxCorner => position + MapDimensions;
 
