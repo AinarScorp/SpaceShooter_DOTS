@@ -11,6 +11,7 @@ namespace SpaceShooter.Authoring
         public GameObject AsteroidPrefab;
         public float2 MapDimensions;
         public float AsteroidSpawnRate;
+        public float AsteroidSpeedIncreaseMultiplier = 1;
 
         public uint RandomSeed;
 
@@ -26,6 +27,7 @@ namespace SpaceShooter.Authoring
                 MapDimensions = authoring.MapDimensions,
                 AsteroidSpawnRate = authoring.AsteroidSpawnRate,
                 AsteroidPrefab = GetEntity(authoring.AsteroidPrefab, TransformUsageFlags.Dynamic),
+                AsteroidSpeedIncreaseMultiplier = authoring.AsteroidSpeedIncreaseMultiplier,
             });
             AddComponent(entity, new GameRandom
             {

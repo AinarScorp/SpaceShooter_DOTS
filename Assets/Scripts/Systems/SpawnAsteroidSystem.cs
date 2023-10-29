@@ -36,7 +36,7 @@ namespace SpaceShooter.Systems
                 PlayerLocation = playerLocation,
                 DeltaTime = deltaTime,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged)
-            }.Run();
+            }.Schedule();
         }
     }
     [BurstCompile]

@@ -49,5 +49,6 @@ MonoBehaviour:
   MapDimensions:
     x: 160
     y: 100
-  AsteroidSpawnRate: 2
+  AsteroidSpawnRate: 0.5
+  AsteroidSpeedIncreaseMultiplier: 0.1
   RandomSeed: 100

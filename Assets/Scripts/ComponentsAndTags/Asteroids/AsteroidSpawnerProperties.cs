@@ -8,7 +8,10 @@ namespace SpaceShooter.Components
         public Entity AsteroidPrefab;
         public float2 MapDimensions;
         public float AsteroidSpawnRate;
+        public float AsteroidSpeedIncreaseMultiplier;
     }
+
+    
 
     public struct AsteroidSpawnTimer : IComponentData
     {

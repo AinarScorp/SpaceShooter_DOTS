@@ -12,10 +12,17 @@ namespace Aspects
         readonly RefRW<AsteroidSpawnTimer> asteroidSpawnTimer;
         readonly RefRW<GameRandom> gameRandom;
 
-        readonly RefRO<AsteroidSpawnerProperties> asteroidSpawnerProperties;
+        readonly RefRW<AsteroidSpawnerProperties> asteroidSpawnerProperties;
 
-        public Entity AsteroidPrefab => asteroidSpawnerProperties.ValueRO.AsteroidPrefab;
-        private float3 position => transform.ValueRO.Position;
+        public Entity AsteroidPrefab
+        {
+            get { return asteroidSpawnerProperties.ValueRO.AsteroidPrefab; }
+        }
+
+        private float3 position
+        {
+            get { return transform.ValueRO.Position; }
+        }
 
         public LocalTransform GetRandomSpawnLocation()
         {
@@ -23,7 +30,7 @@ namespace Aspects
             {
                 Position = GetRandomPosition(),
                 Rotation = quaternion.identity,
-                Scale = GetRandomScale(0.3f,1.2f)
+                Scale = GetRandomScale(0.8f,2f)
             };
         }
         
@@ -47,24 +54,54 @@ namespace Aspects
 
             return randomPosition;
         }
-        float GetRandomScale(float minScale, float maxScale) => gameRandom.ValueRW.Value.NextFloat(minScale, maxScale);
-        private float3 MinCorner => position - MapDimensions;
-        private float3 MaxCorner => position + MapDimensions;
-
-        private float3 MapDimensions => new()
+        float GetRandomScale(float minScale, float maxScale)
         {
-            x = asteroidSpawnerProperties.ValueRO.MapDimensions.x,
-            y = 0f,
-            z = asteroidSpawnerProperties.ValueRO.MapDimensions.y
-        };
+            return gameRandom.ValueRW.Value.NextFloat(minScale, maxScale);
+        }
+
+        private float3 MinCorner
+        {
+            get { return position - MapDimensions; }
+        }
+
+        private float3 MaxCorner
+        {
+            get { return position + MapDimensions; }
+        }
+
+        private float3 MapDimensions
+        {
+            get
+            {
+                return new()
+                {
+                    x = asteroidSpawnerProperties.ValueRO.MapDimensions.x,
+                    y = 0f,
+                    z = asteroidSpawnerProperties.ValueRO.MapDimensions.y
+                };
+            }
+        }
+
         public float AsteroidSpawnTimer
         {
-            get => asteroidSpawnTimer.ValueRO.Value;
-            set => asteroidSpawnTimer.ValueRW.Value = value;
+            get { return asteroidSpawnTimer.ValueRO.Value; }
+            set { asteroidSpawnTimer.ValueRW.Value = value; }
         }
-        public bool AsteroidIsReadyForSpawn => AsteroidSpawnTimer <= 0f;
-        public float AsteroidSpawnRate => asteroidSpawnerProperties.ValueRO.AsteroidSpawnRate;
 
+        public bool AsteroidIsReadyForSpawn
+        {
+            get { return AsteroidSpawnTimer <= 0f; }
+        }
 
+        public float AsteroidSpawnRate
+        {
+            get => asteroidSpawnerProperties.ValueRO.AsteroidSpawnRate;
+            private set=> asteroidSpawnerProperties.ValueRW.AsteroidSpawnRate = value;
+        }
+
+        public void ReduceSpawnRate(float deltaTime)
+        {
+            AsteroidSpawnRate = math.clamp(AsteroidSpawnRate,0, AsteroidSpawnRate - asteroidSpawnerProperties.ValueRO.AsteroidSpeedIncreaseMultiplier * deltaTime);
+        }
     }
 }

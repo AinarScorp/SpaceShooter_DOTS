@@ -7,9 +7,6 @@ using Unity.Physics.Systems;
 
 namespace SpaceShooter.Systems
 {
-    // This system sets the PhysicsGravityFactor of any dynamic body that enters a Trigger Volume.
-    // A Trigger Volume is defined by a PhysicsShapeAuthoring with the `Is Trigger` flag ticked and a
-    // TriggerGravityFactor behaviour added.
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(PhysicsSystemGroup))]
     public partial struct TriggerCollisionSystem : ISystem
