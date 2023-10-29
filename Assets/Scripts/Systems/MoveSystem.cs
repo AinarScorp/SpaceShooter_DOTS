@@ -1,4 +1,5 @@
-﻿using SpaceShooter.Components;
+﻿using Aspects;
+using SpaceShooter.Components;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -24,13 +25,15 @@ namespace SpaceShooter.Systems
     {
         public float DeltaTime;
         [BurstCompile]
-        void Execute(ref LocalTransform transform, in PlayerMoveInput moveInput, PlayerMoveSpeed moveSpeed)
+        void Execute(PlayerAspect transform, in PlayerMoveInput moveInput, PlayerMoveSpeed moveSpeed)
         {
-            transform.Position.xz += moveInput.Value * moveSpeed.Value * DeltaTime;
+            transform.Move(moveInput.Value * moveSpeed.Value * DeltaTime);
+            //transform.Position.xz += moveInput.Value * moveSpeed.Value * DeltaTime;
             if (math.lengthsq(moveInput.Value) > float.Epsilon)
             {
-                var forward = new float3(moveInput.Value.x, 0f, moveInput.Value.y);
-                transform.Rotation = quaternion.LookRotation(forward, math.up());
+                float3 forward = new float3(moveInput.Value.x, 0f, moveInput.Value.y);
+                transform.Rotate(forward);
+                //transform.Rotation = quaternion.LookRotation(forward, math.up());
             }
         }
     }
