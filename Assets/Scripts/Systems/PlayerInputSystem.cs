@@ -10,6 +10,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 namespace SpaceShooter.Systems
 {
     [UpdateInGroup(typeof(InitializationSystemGroup), OrderLast = true)]
+    
     public partial class PlayerInputSystem: SystemBase
     {
         Camera mainCamera;

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7118826027187400540}
   - component: {fileID: 6702823462736428810}
   - component: {fileID: 2002495276303836018}
-  - component: {fileID: 7835709533772045436}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -138,21 +137,3 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &7835709533772045436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8695708367513244483}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec467979970e8a46a68f3c85cb43cb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  drawGizmos: 1
-  gizmosColor: {r: 0, g: 1, b: 0, a: 1}
-  player: {fileID: 0}
-  mapDimensions:
-    x: 150
-    y: 100

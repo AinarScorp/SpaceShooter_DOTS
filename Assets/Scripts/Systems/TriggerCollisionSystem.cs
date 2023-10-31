@@ -9,6 +9,7 @@ namespace SpaceShooter.Systems
 {
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(PhysicsSystemGroup))]
+    [UpdateBefore(typeof(HitPlayerSystem))]
     public partial struct TriggerCollisionSystem : ISystem
     {
         [BurstCompile]
@@ -26,31 +27,34 @@ namespace SpaceShooter.Systems
             {
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged),
 
-                AsteroidTagComponentLookup = SystemAPI.GetComponentLookup<AsteroidTag>(),
+                AsteroidTagComponentLookup = SystemAPI.GetComponentLookup<AsteroidTag>(true),
                 ProjectileTagComponentLookup = SystemAPI.GetComponentLookup<ProjectileTag>(),
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
+            
         }
+    }
 
-        [BurstCompile]
-        struct TriggerCollisionSystemJob : ITriggerEventsJob
+    [BurstCompile]
+    [UpdateBefore(typeof(HitPlayerJob))]
+    struct TriggerCollisionSystemJob : ITriggerEventsJob
+    {
+        [ReadOnly]public ComponentLookup<AsteroidTag> AsteroidTagComponentLookup;
+        public ComponentLookup<ProjectileTag> ProjectileTagComponentLookup;
+        public EntityCommandBuffer ECB;
+
+        public void Execute(TriggerEvent triggerEvent)
         {
-            public ComponentLookup<AsteroidTag> AsteroidTagComponentLookup;
-            public ComponentLookup<ProjectileTag> ProjectileTagComponentLookup;
-            public EntityCommandBuffer ECB;
-
-            public void Execute(TriggerEvent triggerEvent)
+            Entity AsteroidEntity = AsteroidTagComponentLookup.HasComponent(triggerEvent.EntityA) ? triggerEvent.EntityA :
+                AsteroidTagComponentLookup.HasComponent(triggerEvent.EntityB) ? triggerEvent.EntityB : Entity.Null;
+            Entity ProjectileEntity = ProjectileTagComponentLookup.HasComponent(triggerEvent.EntityA) ? triggerEvent.EntityA :
+                ProjectileTagComponentLookup.HasComponent(triggerEvent.EntityB) ? triggerEvent.EntityB : Entity.Null;
+            if (AsteroidEntity == Entity.Null || ProjectileEntity == Entity.Null)
             {
-                Entity ProjectileEntity = AsteroidTagComponentLookup.HasComponent(triggerEvent.EntityA) ? triggerEvent.EntityA :
-                    AsteroidTagComponentLookup.HasComponent(triggerEvent.EntityB) ? triggerEvent.EntityB : Entity.Null;
-                Entity AsteroidEntity = ProjectileTagComponentLookup.HasComponent(triggerEvent.EntityA) ? triggerEvent.EntityA :
-                    ProjectileTagComponentLookup.HasComponent(triggerEvent.EntityB) ? triggerEvent.EntityB : Entity.Null;
-                if (AsteroidEntity== Entity.Null || ProjectileEntity == Entity.Null)
-                {
-                    return;
-                }
-                ECB.DestroyEntity(ProjectileEntity);
-                ECB.DestroyEntity(AsteroidEntity);
+                return;
             }
+
+            ECB.DestroyEntity(ProjectileEntity);
+            ECB.DestroyEntity(AsteroidEntity);
         }
     }
 }

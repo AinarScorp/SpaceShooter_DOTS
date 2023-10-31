@@ -11,6 +11,7 @@ namespace SpaceShooter.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -42,7 +43,6 @@ namespace SpaceShooter.Systems
         private void Execute(EndlessMoverAspect endlessMover, [ChunkIndexInQuery] int sortKey)
         {
             endlessMover.Move(DeltaTime);
-
         }
     }
 }
